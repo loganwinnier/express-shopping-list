@@ -1,6 +1,6 @@
 const express = require("express");
 
-const { items } = require("./fakeDb");
+const db = require("./fakeDb");
 const { BadRequestError } = require("./expressError");
 const router = new express.Router();
 
@@ -10,7 +10,7 @@ const router = new express.Router();
  */
 router.get("", function (req, res) {
 
-    return res.json({ items: items });
+    return res.json({ items: db.Items.items });
 
 });
 
@@ -20,11 +20,9 @@ router.get("", function (req, res) {
  */
 router.post("", function (req, res) {
     const item = req.body;
+    db.Items.addItem(item)
 
-    item.name = item.name.replace(' ', '-');
-
-    items.push(item);
-    res.json({ added: item });
+    return res.json({ added: item });
 });
 
 
@@ -33,14 +31,10 @@ router.post("", function (req, res) {
  */
 router.get("/:name", function (req, res) {
     const name = req.params.name;
-    const item = items.find(item => item === item[name]);
 
-    if (!item) {
-        throw new BadRequestError('Item not found :(');
-    }
+    item = db.Items.getItem(name)
 
-    return res.json({ items: items });
-
+    return res.json(item);
 });
 
 
